@@ -268,7 +268,7 @@ if __name__ == "__main__":
     config.update(vars(args))
 
     # Logger
-    log_name = get_experiment_name()[:-5]
+    log_name = get_experiment_name()
     if config.datasets.train.gp.data_size is None:
         # Inf
         log_name = log_name + f'_ni{(config.train.num_epochs * config.train.num_step_per_epoch):06d}'
