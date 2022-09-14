@@ -194,7 +194,7 @@ def main(config, output_dir):
                     aux_meter.update(train_metric["aux"])
 
             logger.info(
-                f"Epoch {i:3d} / {config.train.num_epochs:4d} | Train Loss: {train_meter.loss:7.4f}"
+                f"Epoch {i:4d} / {config.train.num_epochs:4d} | Train Loss: {train_meter.loss:7.4f}"
                 + (f" | LR: {schedule(state.step[0]):.4e}" if config.optimizer.use_scheduler else "")
                 + ("" if aux_meter is None else " | " + "  ".join([f"{k}: {v:7.4f}" for k, v in aux_meter.value.items()]))
             )
@@ -216,7 +216,7 @@ def main(config, output_dir):
                 ll_ctx, ll_tar, ll = valid_meter.ll_ctx, valid_meter.ll_tar, valid_meter.ll
 
                 logger.info(
-                    f"Epoch {i:3d} / {config.train.num_epochs:4d} | "
+                    f"Epoch {i:4d} / {config.train.num_epochs:4d} | "
                     f"Valid LL CTX: {ll_ctx:7.4f}  LL TAR: {ll_tar:7.4f}  LL: {ll:7.4f}"
                     f"{'  (Best LL)' if ll > best_ll else ''}"
                 )
@@ -268,7 +268,7 @@ if __name__ == "__main__":
     config.update(vars(args))
 
     # Logger
-    log_name = 'run' # get_experiment_name()[:-5]
+    log_name = get_experiment_name()[:-5]
     if config.datasets.train.gp.data_size is None:
         # Inf
         log_name = log_name + f'_ni{(config.train.num_epochs * config.train.num_step_per_epoch):06d}'
