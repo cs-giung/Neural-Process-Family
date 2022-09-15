@@ -37,7 +37,7 @@ SplitType = Literal["train", "valid", "test"]
 
 
 class ImageDataset(Dataset):
-    chunk_size = 64
+    chunk_size = 256
 
     def __init__(
         self,
