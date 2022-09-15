@@ -269,6 +269,8 @@ if __name__ == "__main__":
 
     # Logger
     log_name = get_experiment_name()
+    if config.model.kwargs.get('loss_type', None) in ['ml', 'iwae', 'elbo']:
+        log_name = log_name + f'_loss-{config.model.kwargs.loss_type}'
     if config.datasets.train.gp.data_size is None:
         # Inf
         log_name = log_name + f'_ni{(config.train.num_epochs * config.train.num_step_per_epoch):06d}'
