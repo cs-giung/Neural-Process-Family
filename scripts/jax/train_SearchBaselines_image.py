@@ -271,7 +271,7 @@ if __name__ == "__main__":
     log_name = get_experiment_name()
     if config.model.kwargs.get('loss_type', None) in ['ml', 'iwae', 'elbo']:
         log_name = log_name + f'_loss-{config.model.kwargs.loss_type}'
-    log_name = log_name + f'_ni{(config.train.num_steps):06d}'
+    log_name = log_name + f'_ne{(config.train.num_epochs):06d}'
     log_name = log_name + f'_bs{config.datasets.train.batch_size:04d}'
     log_name = log_name + f'_lr{config.optimizer.learning_rate:.6f}'
     log_name = log_name + f'_s{config.train.seed:d}'
