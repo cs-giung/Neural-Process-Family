@@ -27,7 +27,7 @@ from npf.jax.data import get_shard_collate, build_dataloader
 
 
 def link_output_dir(output_dir: str, subnames):
-    link_dir = os.path.join("outs_SearchBaselines", *subnames, os.path.basename(output_dir))
+    link_dir = os.path.join("outs_SearchBaselines_image", *subnames, os.path.basename(output_dir))
     os.makedirs(os.path.dirname(link_dir), exist_ok=True)
     relpath = os.path.relpath(output_dir, os.path.dirname(link_dir))
     os.symlink(relpath, link_dir)
@@ -275,8 +275,8 @@ if __name__ == "__main__":
     log_name = log_name + f'_bs{config.datasets.train.batch_size:04d}'
     log_name = log_name + f'_lr{config.optimizer.learning_rate:.6f}'
     log_name = log_name + f'_s{config.train.seed:d}'
-    output_dir = os.path.join("outs_SearchBaselines", "_", log_name)
-    latest_link = os.path.join("outs_SearchBaselines", "_", "_latest")
+    output_dir = os.path.join("outs_SearchBaselines_image", "_", log_name)
+    latest_link = os.path.join("outs_SearchBaselines_image", "_", "_latest")
 
     os.makedirs(output_dir, exist_ok=True)
     try:
