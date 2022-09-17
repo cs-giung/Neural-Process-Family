@@ -38,7 +38,7 @@ def sync_metric(metric):
 
 def get_test_step(model, **kwargs):
     @partial(jax.pmap, axis_name="batch")
-    def _test_step(state, rngs, x_ctx, y_ctx, x_tar, y_tar, mask_ctx, mask_tar):
+    def _test_step(state, rngs, batch):
         ll, ll_ctx, ll_tar = model.apply(
             state["params"], batch, method=model.log_likelihood, rngs=rngs, split_set=True, **kwargs,
         )
