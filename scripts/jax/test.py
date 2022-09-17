@@ -39,14 +39,13 @@ def sync_metric(metric):
 def get_test_step(model, **kwargs):
     @partial(jax.pmap, axis_name="batch")
     def _test_step(state, rngs, x_ctx, y_ctx, x_tar, y_tar, mask_ctx, mask_tar):
-        ll = model.apply(
-            state["params"], x_ctx, y_ctx, x_tar, y_tar, mask_ctx, mask_tar,
-            method=model.log_likelihood, rngs=rngs, **kwargs,
+        ll, ll_ctx, ll_tar = model.apply(
+            state["params"], batch, method=model.log_likelihood, rngs=rngs, split_set=True, **kwargs,
         )
-        return ll
+        return ll, ll_ctx, ll_tar
 
-    def test_step(state, rngs, *, x_ctx, y_ctx, x_tar, y_tar, mask_ctx, mask_tar):
-        metric = _test_step(state, rngs, x_ctx, y_ctx, x_tar, y_tar, mask_ctx, mask_tar)
+    def test_step(state, rngs, batch):
+        metric = _test_step(state, rngs, batch)
         return sync_metric(metric)
 
     return test_step
@@ -70,7 +69,7 @@ def main(config, output_dir):
         raise ValueError(f"Unknown model: {config.model.name}")
 
     model = getattr(models, config.model.name)(
-        y_dim=config.datasets.shapes.y_ctx[-1],
+        y_dim=config.datasets.shapes.y[-1],
         **config.model.get("kwargs", {}),
     )
 
@@ -108,21 +107,7 @@ def main(config, output_dir):
             key, model_key = random.split(key)
             replicated_rngs = jax_utils.replicate(dict(sample=model_key))
 
-            ll_ctx = test_step(
-                state, replicated_rngs,
-                x_ctx=batch.x_ctx, y_ctx=batch.y_ctx, mask_ctx=batch.mask_ctx,
-                x_tar=batch.x_ctx, y_tar=batch.y_ctx, mask_tar=batch.mask_ctx,
-            )
-            ll_tar = test_step(
-                state, replicated_rngs,
-                x_ctx=batch.x_ctx, y_ctx=batch.y_ctx, mask_ctx=batch.mask_ctx,
-                x_tar=batch.x_tar, y_tar=batch.y_tar, mask_tar=batch.mask_tar,
-            )
-            ll = test_step(
-                state, replicated_rngs,
-                x_ctx=batch.x_ctx, y_ctx=batch.y_ctx, mask_ctx=batch.mask_ctx,
-                x_tar=batch.x,     y_tar=batch.y,     mask_tar=batch.mask,
-            )
+            ll, ll_ctx, ll_tar = test_step(state=state, rngs=replicated_rngs, batch=batch)
 
             test_meter.update(ll_ctx=ll_ctx, ll_tar=ll_tar, ll=ll, n=len(batch.x))
 
