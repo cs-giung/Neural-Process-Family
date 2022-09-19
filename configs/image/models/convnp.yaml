@@ -1,5 +1,7 @@
 name: ConvNP
 kwargs:
+  x_min: -1.0
+  x_max: +1.0
   z_dim: 64
   r_dim: 64
   cnn_dims: null  # use default
@@ -7,6 +9,7 @@ kwargs:
   on_the_grid: True
   points_per_unit: 64
   loss_type: ml
+  x_margin: 0.1
   min_sigma: 0.1
   min_latent_sigma: 0.1
 train_kwargs:
