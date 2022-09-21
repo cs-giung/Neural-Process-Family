@@ -11,3 +11,5 @@ from .convnp import *
 
 from .bnp import *
 from .neubnp import *
+
+from .convcnp2d import *
